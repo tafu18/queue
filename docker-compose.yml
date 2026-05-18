@@ -1,0 +1,79 @@
+version: '3.8'
+
+services:
+  # NestJS Application API Service (Development Hot Reload / Watch Mode)
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: development # Targets the development stage in Dockerfile
+    container_name: nestjs_api
+    restart: always
+    ports:
+      - "${PORT:-3000}:3000"
+    volumes:
+      # Mount the local directory to enable Hot Reloading
+      - .:/usr/src/app
+      # Exclude host's node_modules from overwriting container's node_modules
+      - /usr/src/app/node_modules
+    env_file:
+      - .env
+    environment:
+      - DB_HOST=postgres
+      - REDIS_HOST=redis
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - nest_network
+
+  # PostgreSQL Database Service
+  postgres:
+    image: postgres:16-alpine
+    container_name: nestjs_postgres
+    restart: always
+    environment:
+      POSTGRES_DB: ${DB_NAME:-nestjs_db}
+      POSTGRES_USER: ${DB_USERNAME:-postgres}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-postgres_password}
+    ports:
+      - "${DB_PORT:-5432}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - nest_network
+
+  # Redis Service (used for BullMQ)
+  redis:
+    image: redis:7.2-alpine
+    container_name: nestjs_redis
+    restart: always
+    command: redis-server --save 60 1 --loglevel warning
+    ports:
+      - "${REDIS_PORT:-6379}:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - nest_network
+
+networks:
+  nest_network:
+    driver: bridge
+
+volumes:
+  postgres_data:
+    driver: local
+  redis_data:
+    driver: local

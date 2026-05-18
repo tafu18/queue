@@ -1,0 +1,57 @@
+# NestJS Derleme Çıktıları
+/dist
+/node_modules
+
+# Bağımlılık ve Paket Yöneticisi Önbellekleri
+/package-lock.json
+/.npm
+/.pnpm-store
+/yarn.lock
+/*.tsbuildinfo
+
+# Loglar ve Hata Raporları
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
+
+# Çalışma Zamanı Verileri ve PID Dosyaları
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# Test Kapsama Raporları (Coverage)
+/coverage
+/.nyc_output
+
+# Özel/Hassas Çevre Değişkenleri (GitHub'a ASLA YÜKLENMEMELİ!)
+.env
+.env.production
+.env.local
+.env.*.local
+
+# IDE ve Editör Klasörleri
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+.history/
+*.code-workspace
+.idea/
+*.iws
+*.iml
+*.ipr
+
+# İşletim Sistemi Sistem Dosyaları
+.DS_Store
+Thumbs.db
+
+# Docker Yerel Hacimleri ve Logları
+postgres_data/
+redis_data/
+.docker_volumes/
